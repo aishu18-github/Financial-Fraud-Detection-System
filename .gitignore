@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtualenv
+fraud-env/
+env/
+venv/
+.venv/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Secrets
+.env
+secrets.json
+credentials.json
+
+# Jupyter
+.ipynb_checkpoints/
+
+#Models and data (uncomment if you prefer to ignore them)
+models/*.pkl
+creditcard.csv
+
+# Git LFS placeholders (if used)
+.gitattributes

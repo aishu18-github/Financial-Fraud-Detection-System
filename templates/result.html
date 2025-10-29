@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Transaction Result — Financial Fraud Detection</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="page-bg">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">💳</div>
+        <div class="brand-text">Financial Fraud Detection</div>
+      </div>
+      <div class="brand-sub">Risk Analyzer</div>
+    </header>
+
+    <main class="main-card">
+      <div class="result-head">
+        <div>
+          <h2 class="card-title">Transaction Analysis Result</h2>
+          <div class="meta">Type: <strong>{{ transaction_type }}</strong> • Amount: ₹{{ amount }} • Time: {{ time_str }}</div>
+        </div>
+
+        <div class="risk-pill-wrap">
+          {% if risk_pct >= 75 %}
+            <div class="risk-pill danger">🚨 HIGH RISK • {{ risk_pct }}%</div>
+          {% elif risk_pct >= 50 %}
+            <div class="risk-pill warn">⚠️ SUSPICIOUS • {{ risk_pct }}%</div>
+          {% else %}
+            <div class="risk-pill safe">✅ SAFE • {{ risk_pct }}%</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="result-grid">
+        <section class="left-panel">
+          <h3 class="section-title">Verdict</h3>
+          <div class="verdict">{{ prediction_text }}</div>
+
+          <h3 class="section-title">Why this score?</h3>
+          <ul class="breakdown">
+            {% for item in breakdown %}
+              <li>
+                <div class="b-title">{{ item.name }} — {{ item.value }} pts</div>
+                <div class="b-sub">{{ item.explanation }} — contribution: {{ item.contribution }} pts</div>
+              </li>
+            {% endfor %}
+          </ul>
+
+          <h3 class="section-title">Recommended Actions</h3>
+          <ul class="actions">
+            {% if risk_pct >= 50 %}
+              <li>• Place transaction on hold and request OTP / re-authentication</li>
+              <li>• Notify cardholder and fraud ops team immediately</li>
+            {% else %}
+              <li>• No immediate action required. Continue monitoring.</li>
+            {% endif %}
+          </ul>
+
+          <a class="btn-primary" href="/">← Analyze another transaction</a>
+        </section>
+
+        <aside class="right-panel">
+          <canvas id="riskChart" width="260" height="260"></canvas>
+
+          <div class="mini-metrics">
+            <div class="metric">
+              <div class="m-title">Risk Score</div>
+              <div class="m-value">{{ risk_pct }}%</div>
+            </div>
+            <div class="metric">
+              <div class="m-title">Type</div>
+              <div class="m-value">{{ transaction_type }}</div>
+            </div>
+            <div class="metric">
+              <div class="m-title">Amount</div>
+              <div class="m-value">₹{{ amount }}</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="foot">
+      <small>© 2025 Financial Fraud Detection</small>
+    </footer>
+  </div>
+
+<script>
+  const pct = Number({{ risk_pct }});
+  const safe = Math.max(0, 100 - pct);
+  const color = pct >= 75 ? 'rgba(255,59,48,0.95)' : (pct >= 50 ? 'rgba(255,160,50,0.95)' : 'rgba(199,125,255,0.95)');
+
+  const ctx = document.getElementById('riskChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Risk', 'Safe'],
+      datasets: [{
+        data: [pct, safe],
+        backgroundColor: [color, 'rgba(255,255,255,0.06)'],
+        hoverOffset: 8,
+        borderWidth: 0
+      }]
+    },
+    options: {
+      cutout: '72%',
+      plugins: { legend: { display: false } }
+    }
+  });
+</script>
+</body>
+</html>
