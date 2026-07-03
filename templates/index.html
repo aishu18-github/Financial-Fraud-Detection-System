@@ -1,97 +1,107 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Financial Fraud Detection</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Fraud Detection System</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            display: flex;
+            justify-content: center;
+            padding-top: 50px;
+        }
+
+        .container {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            width: 420px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #38bdf8;
+        }
+
+        label {
+            font-size: 14px;
+            margin-top: 10px;
+            display: block;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 6px;
+            border: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background: #22c55e;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #16a34a;
+        }
+    </style>
 </head>
+
 <body>
-  <div class="page-bg">
-    <header class="topbar">
-      <div class="brand">
-        <div class="brand-mark">💳</div>
-        <div class="brand-text">Financial Fraud Detection</div>
-      </div>
-      <div class="brand-sub">Risk Analyzer</div>
-    </header>
 
-    <main class="main-card">
-      <h2 class="card-title">Transaction Analysis</h2>
+<div class="container">
 
-      <form id="txnForm" action="/predict" method="POST" class="form-grid">
-        <div class="form-row">
-          <label for="transaction_amount">Amount (₹)</label>
-          <input id="transaction_amount" name="transaction_amount" type="number" step="0.01" min="0" required>
-        </div>
+    <h2>Fraud Detection System</h2>
 
-        <div class="form-row">
-          <label for="transaction_time">Transaction Time</label>
-          <input id="transaction_time" name="transaction_time" type="datetime-local" required>
-        </div>
+    <form action="/predict" method="POST">
 
-        <div class="form-row">
-          <label for="transaction_type">Transaction Type</label>
-          <select id="transaction_type" name="transaction_type" required>
-            <option value="UPI">UPI</option>
-            <option value="Card">Card</option>
-            <option value="International">International</option>
-            <option value="Wallet">Wallet</option>
-          </select>
-        </div>
+        <label>Amount</label>
+        <input type="number" name="amount" required>
 
-        <div class="form-row">
-          <button class="btn-primary" type="submit">Analyze Transaction</button>
-        </div>
-      </form>
+        <label>Hour (0–23)</label>
+        <input type="number" name="hour" min="0" max="23" required>
 
-      <div class="examples-row">
-        <button class="btn-safe" onclick="fillSafe()">Safe Example</button>
-        <button class="btn-danger" onclick="fillSuspicious1()">Suspicious 1</button>
-        <button class="btn-danger" onclick="fillSuspicious2()">Suspicious 2</button>
-      </div>
+        <label>Payment Mode</label>
+        <select name="payment_mode">
+            <option>UPI</option>
+            <option>Card</option>
+            <option>Netbanking</option>
+            <option>Wallet</option>
+        </select>
 
-      <p class="hint">Tip: Use the example presets to demo typical legitimate vs suspicious patterns.</p>
-    </main>
+        <label>Transaction Type</label>
+        <select name="txn_type">
+            <option>Online</option>
+            <option>Offline</option>
+        </select>
 
-    <footer class="foot">
-      <small>© 2025 Financial Fraud Detection</small>
-    </footer>
-  </div>
+        <label>International Transaction</label>
+        <select name="international">
+            <option>No</option>
+            <option>Yes</option>
+        </select>
 
-<script>
-  function fillSafe(){
-    document.getElementById('transaction_amount').value = 600;
-    const d = new Date();
-    d.setHours(11,30,0,0);
-    const pad = n => String(n).padStart(2,'0');
-    document.getElementById('transaction_time').value =
-      `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-    document.getElementById('transaction_type').value = 'Card';
-  }
+        <label>New Device</label>
+        <select name="new_device">
+            <option>No</option>
+            <option>Yes</option>
+        </select>
 
-  function fillSuspicious1(){
-    const d = new Date();
-    d.setHours(3,0,0,0);
-    const pad = n => String(n).padStart(2,'0');
-    document.getElementById('transaction_time').value =
-      `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-    
-    document.getElementById('transaction_amount').value = 150000;
-    document.getElementById('transaction_type').value = 'International';
-  }
+        <button type="submit">Analyze Transaction</button>
 
-  function fillSuspicious2(){
-    const d = new Date();
-    d.setHours(2,0,0,0);
-    const pad = n => String(n).padStart(2,'0');
-    document.getElementById('transaction_time').value =
-      `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-    
-    document.getElementById('transaction_amount').value = 90000;
-    document.getElementById('transaction_type').value = 'Wallet';
-  }
-</script>
+    </form>
+
+</div>
 
 </body>
 </html>

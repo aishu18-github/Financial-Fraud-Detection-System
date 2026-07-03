@@ -1,44 +1,67 @@
+# ----------------------------
 # Python
+# ----------------------------
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
 
-# Virtualenv
+# Virtual Environment
 fraud-env/
-env/
 venv/
-.venv/
+.env
 
-# Distribution / packaging
-build/
-dist/
-*.egg-info/
+# ----------------------------
+# Dataset
+# ----------------------------
+data/
+*.csv
 
-# IDEs
+# If you want to keep the data folder structure,
+# create an empty file named .gitkeep inside data/
+# and uncomment the line below.
+#!data/.gitkeep
+
+# ----------------------------
+# Trained Models
+# ----------------------------
+models/*.pkl
+
+# ----------------------------
+# Reports
+# ----------------------------
+reports/
+*.png
+*.json
+
+# ----------------------------
+# VS Code
+# ----------------------------
 .vscode/
-.idea/
-*.sublime-workspace
-*.sublime-project
 
-# OS files
+# ----------------------------
+# OS Files
+# ----------------------------
 .DS_Store
 Thumbs.db
 
+# ----------------------------
 # Logs
+# ----------------------------
 *.log
 
-# Secrets
-.env
-secrets.json
-credentials.json
+# ----------------------------
+# Flask
+# ----------------------------
+instance/
+static/uploads/
 
+# ----------------------------
 # Jupyter
+# ----------------------------
 .ipynb_checkpoints/
 
-#Models and data (uncomment if you prefer to ignore them)
-models/*.pkl
-creditcard.csv
-
-# Git LFS placeholders (if used)
-.gitattributes
+# ----------------------------
+# Misc
+# ----------------------------
+*.tmp

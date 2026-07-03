@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fraud Result</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            display: flex;
+            justify-content: center;
+            padding-top: 40px;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 12px;
+            width: 500px;
+        }
+
+        .risk {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .Critical { background: red; }
+        .High { background: orange; }
+        .Medium { background: yellow; color: black; }
+        .Low { background: green; }
+
+        .box {
+            background: #334155;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+
+        .bar {
+            height: 12px;
+            background: #475569;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .fill {
+            height: 100%;
+            background: #38bdf8;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h2>Fraud Analysis Result</h2>
+
+    <p>
+        <b>Prediction:</b>
+        {{ result["Prediction"] | default("Unknown") }}
+    </p>
+
+    <p>
+        <b>Risk Level:</b>
+        <span class="risk {{ result["RiskLevel"] | default('Low') }}">
+            {{ result["RiskLevel"] | default("Low") }}
+        </span>
+    </p>
+
+    <p>
+        <b>Risk Score:</b>
+        {{ result["RiskScore"] | default(0) }}
+    </p>
+
+    <div class="bar">
+        <div class="fill"
+             style="width: {{ result["RiskScore"] | default(0) }}%;">
+        </div>
+    </div>
+
+    <div class="box">
+        <b>Recommendation:</b>
+        {{ result["Recommendation"] | default("N/A") }}
+    </div>
+
+    <h3>Reasons</h3>
+
+    {% set reasons = result.get("Reasons", []) %}
+
+    {% if reasons and reasons|length > 0 %}
+        <ul>
+            {% for r in reasons %}
+                <li>{{ r }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No explanation available</p>
+    {% endif %}
+
+    <br>
+    <a href="/" style="color:#38bdf8;">← Back</a>
+
+</div>
+
+</body>
+</html>
