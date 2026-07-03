@@ -1,15 +1,26 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 
 class TransactionGenerator:
 
     def __init__(self, dataset_path):
 
-        self.df = pd.read_csv(dataset_path)
+        try:
+            self.df = pd.read_csv(dataset_path)
 
-        # Use only genuine transactions as the base
-        self.normal_df = self.df[self.df["Class"] == 0]
+            if "Class" not in self.df.columns:
+                raise ValueError("Dataset must contain a 'Class' column.")
+
+            self.normal_df = self.df[self.df["Class"] == 0]
+
+            if self.normal_df.empty:
+                raise ValueError("No normal transactions found in dataset.")
+
+            print("Transaction Generator Loaded")
+
+        except Exception as e:
+            raise RuntimeError(f"Failed to load dataset: {e}")
 
     # ----------------------------------------------------------
 
@@ -23,12 +34,11 @@ class TransactionGenerator:
         new_device
     ):
 
-        # Pick a random normal transaction
-        base = self.normal_df.sample(1).iloc[0].copy()
+        base = self.normal_df.sample(n=1).iloc[0].copy()
 
-        # ------------------------------------------------------
-        # User inputs
-        # ------------------------------------------------------
+        # ----------------------------
+        # User Inputs
+        # ----------------------------
 
         base["Amount"] = float(amount)
         base["Time"] = int(hour) * 3600
@@ -38,13 +48,12 @@ class TransactionGenerator:
         base["is_international"] = 1 if international == "Yes" else 0
         base["is_new_device"] = 1 if new_device == "Yes" else 0
 
-        # ------------------------------------------------------
-        # Risk score used only for synthetic feature generation
-        # ------------------------------------------------------
+        # ----------------------------
+        # Risk Estimation
+        # ----------------------------
 
         risk = 0
 
-        # Amount
         if amount >= 100000:
             risk += 6
         elif amount >= 50000:
@@ -56,88 +65,81 @@ class TransactionGenerator:
         elif amount >= 5000:
             risk += 2
 
-        # Night transactions
         if hour <= 5:
             risk += 3
 
-        # International
         if international == "Yes":
             risk += 4
 
-        # New device
         if new_device == "Yes":
             risk += 3
 
-        # Online
         if txn_type == "Online":
             risk += 2
 
-        # Payment mode
-        if payment_mode == "Card":
-            risk += 1
-        elif payment_mode == "Wallet":
+        if payment_mode in ["Card", "Wallet"]:
             risk += 1
 
-        # ------------------------------------------------------
-        # Add random noise to PCA features
-        # ------------------------------------------------------
+        # ----------------------------
+        # PCA Feature Perturbation
+        # ----------------------------
 
         sigma = 0.05 + (risk * 0.08)
 
         for i in range(1, 29):
 
-            feature = f"V{i}"
+            col = f"V{i}"
 
-            if feature in base.index:
+            if col in base.index:
+                base[col] += np.random.normal(0, sigma)
 
-                base[feature] += np.random.normal(0, sigma)
-
-        # ------------------------------------------------------
-        # Strong anomaly injection
-        # ------------------------------------------------------
+        # ----------------------------
+        # Strong Fraud Simulation
+        # ----------------------------
 
         if risk >= 12:
 
-            important = [
-                "V2", "V3", "V4", "V5", "V7",
-                "V9", "V10", "V11", "V12",
-                "V14", "V16", "V17", "V18"
+            features = [
+                "V2", "V3", "V4", "V5",
+                "V7", "V9", "V10", "V11",
+                "V12", "V14", "V16",
+                "V17", "V18"
             ]
 
-            for feature in important:
-
-                if feature in base.index:
-
-                    base[feature] *= np.random.uniform(3.0, 5.0)
+            factor = np.random.uniform(3.0, 5.0)
 
         elif risk >= 8:
 
-            important = [
-                "V3", "V4", "V7", "V10",
-                "V12", "V14", "V17"
+            features = [
+                "V3", "V4", "V7",
+                "V10", "V12",
+                "V14", "V17"
             ]
 
-            for feature in important:
-
-                if feature in base.index:
-
-                    base[feature] *= np.random.uniform(2.0, 3.2)
+            factor = np.random.uniform(2.0, 3.2)
 
         elif risk >= 5:
 
-            important = [
-                "V3", "V4", "V10", "V12"
+            features = [
+                "V3",
+                "V4",
+                "V10",
+                "V12"
             ]
 
-            for feature in important:
+            factor = np.random.uniform(1.4, 2.2)
 
-                if feature in base.index:
+        else:
 
-                    base[feature] *= np.random.uniform(1.4, 2.2)
+            features = []
+            factor = 1
 
-        # ------------------------------------------------------
-        # Small amount variation
-        # ------------------------------------------------------
+        for feature in features:
+
+            if feature in base.index:
+                base[feature] *= factor
+
+        # Small randomness
 
         base["Amount"] *= np.random.uniform(0.98, 1.02)
 
